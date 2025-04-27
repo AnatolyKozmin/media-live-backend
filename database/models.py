@@ -34,10 +34,10 @@ class Users(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_name: Mapped[str] = mapped_column(String)
-    user_tg: Mapped[str] = mapped_column(String, unique=True)
+    user_tg: Mapped[str] = mapped_column(String, unique=True) # ID в телеграм 
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     score: Mapped[float] = mapped_column(Double, default=0.0)
-    username_tg: Mapped[str] = mapped_column(String)
+    username_tg: Mapped[str] = mapped_column(String) # username в телеграм
 
     registrations: Mapped[list["LectureRegistrations"]] = relationship(back_populates="user")
 

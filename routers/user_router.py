@@ -1,8 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, HttpUrl
+from pydantic import HttpUrl
+from database.dao import BaseDAO
 
 import logging
 from typing import Optional, List
+from schemas.user_schemas import AuthRequest, AuthResponse
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -10,10 +13,26 @@ logger = logging.getLogger(__name__)
 user_router = APIRouter()
 
 
-@user_router.get('/auth')
-async def authenticate(name: str, lastname: str, username_tg: str):
-    return {"message" : "Прсто заглушка"}
+@user_router.get('/',
+                 response_model=AuthRequest,
+                 description='Check type of user',
+                 responses={
+                     200: {'descr': 'Auth complete'},
+                     500: {'descr': 'SERVER ERROR'},}
+                 )
+async def authenticate(request: AuthRequest):
+    logger.info(f'Аутентификация пользователя: telegram_id=')
+    try: 
+        is_admin = await BaseDAO.check_auth(
+            first_name=request.first_name,
+            last_name=request.last_name,
+            user_tg=request.tg_id,
+            username_tg=request.username_tg
+        )
+    except:
+        ...
 
+    
 
 @user_router.get('/lections')
 async def get_all_lections():
