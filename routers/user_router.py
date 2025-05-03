@@ -49,7 +49,6 @@ async def authenticate(request: AuthRequest):
 async def get_all_lections():
     f'''
     Получение списка всех людей с количеством оставшивхся мест
-
     '''
     try: 
         lectures = await BaseDAO.get_all_lectures()
@@ -61,4 +60,8 @@ async def get_all_lections():
 
 @user_router.get("/profile",)
 async def get_score():
-    return {"message": "Получение баллов участника, а также его команд"}
+    f'''
+    Отображение баллов, которые пользователь набрал
+    '''
+    try: 
+        scores = await BaseDAO.
