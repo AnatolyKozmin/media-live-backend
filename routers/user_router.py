@@ -4,7 +4,7 @@ from database.dao import BaseDAO
 
 import logging
 from typing import Optional, List
-from schemas.user_schemas import AuthRequest, AuthResponse
+from schemas.user_schemas import AuthRequest, AuthResponse, LectureResponse
 
 
 logging.basicConfig(level=logging.INFO)
@@ -18,8 +18,7 @@ user_router = APIRouter()
                  description='Check type of user',
                  responses={
                      200: {'descr': 'Auth complete'},
-                     500: {'descr': 'SERVER ERROR'},}
-                 )
+                     500: {'descr': 'SERVER ERROR'},})
 async def authenticate(request: AuthRequest):
     logger.info(f'Аутентификация пользователя: telegram_id=')
     try: 
@@ -29,26 +28,40 @@ async def authenticate(request: AuthRequest):
             user_tg=request.tg_id,
             username_tg=request.username_tg
         )
-    except:
-        ...
 
-    
+        user_name = f'{request.first_name} {request.last_name}'.strip() or "unknown"
 
-@user_router.get('/lections')
+        response = AuthResponse(
+            is_admin=is_admin,
+            user_name=user_name, 
+            tg_id=request.user_tg,
+            message="is_admin" if is_admin else "user",
+        )
+
+        logger.info(f'Результат аутентификации: tg_id: {request.user_tg}, is admin: {is_admin}')
+        return response
+    except Exception as e:
+        logging.error(f'Ошибка при аутентификации: {str(e)}')
+        raise HTTPException(status_code=500, detail=f'Ошибка при аутентификации')
+     
+
+@user_router.get('/lections', response_model=list[LectureResponse])
 async def get_all_lections():
-    return {"message": "Такая же просто заглушка"}
+    f'''
+    Получение списка всех людей с количеством оставшивхся мест
+    '''
+    try: 
+        lectures = await BaseDAO.get_all_lectures()
+        return lectures 
+    except Exception as e:
+        logger.error(f'Ошибка при получении списка всех лекций {str(e)}')
+        raise HTTPException(status_code=500, detail=f'Ошибка при получении списка всех лекций {str(e)}')
 
 
-@user_router.get("/lections/regestartion")
-async def get_regestration():
-    return {"message" : "Ручка записи на лекцию"}
-
-
-@user_router.get("/lections/get_photo")
-async def get_photo_lection(lection_id: int):
-    return {"message": "Получение фото марщрута всплывающим окном"}
-
-
-@user_router.get("/profile")
+@user_router.get("/profile",)
 async def get_score():
-    return {"message": "Получение баллов участника, а также его команд"}
+    f'''
+    Отображение баллов, которые пользователь набрал
+    '''
+    try: 
+        scores = await BaseDAO.

@@ -417,3 +417,18 @@ class BaseDAO:
             except SQLAlchemyError as e:
                 await session.rollback()
                 raise e
+            
+
+    async def get_score(username_tg: str):
+        f'''
+        Метод для получения баллов пользователя 
+
+        Аргументы:
+        - username_tg: ник пользователя в телеграм
+        
+        Возвращает:
+        - Баллы пользователя пользователя (Посчитать и внести в БД!!!)
+        '''
+        async with async_session_maker() as session: 
+        
+            query = select(Users). 
